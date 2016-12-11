@@ -41,7 +41,7 @@
 <link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="算法," />
 
 
 
@@ -57,16 +57,22 @@
 
 
 
-<meta name="description" content="今夜我不关心人类只想你">
+<meta name="description" content="今年的华为软件挑战赛：在图G中指定起点、终点和必须经过的点集，要求找到符合条件的最优Hamilton路。看到该题目的第一反应是TSP问题，在Stack Overflow上搜寻到一个将必经点集进行全排再遍历找到最小路径的方法，尝试后发现效率极低。然后尝试启发式算法来找近似最优解，机缘巧合和时间限制下，只尝试了蚁群算法及其改进后的一些算法。现将思路和代码总结如下。
+
+蚁群算法简介———————————">
 <meta property="og:type" content="article">
-<meta property="og:title" content="To +1">
-<meta property="og:url" content="http://yoursite.com/2016/02/12/My-New-Post/index.html">
+<meta property="og:title" content="java实现改良蚁群算法解决TSP问题">
+<meta property="og:url" content="http://yoursite.com/2016/04/15/java实现改良蚁群算法解决TSP问题/index.html">
 <meta property="og:site_name" content="Qiangber's Notes">
-<meta property="og:description" content="今夜我不关心人类只想你">
-<meta property="og:updated_time" content="2016-02-12T14:21:30.974Z">
+<meta property="og:description" content="今年的华为软件挑战赛：在图G中指定起点、终点和必须经过的点集，要求找到符合条件的最优Hamilton路。看到该题目的第一反应是TSP问题，在Stack Overflow上搜寻到一个将必经点集进行全排再遍历找到最小路径的方法，尝试后发现效率极低。然后尝试启发式算法来找近似最优解，机缘巧合和时间限制下，只尝试了蚁群算法及其改进后的一些算法。现将思路和代码总结如下。
+
+蚁群算法简介———————————">
+<meta property="og:updated_time" content="2016-04-24T09:26:58.532Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="To +1">
-<meta name="twitter:description" content="今夜我不关心人类只想你">
+<meta name="twitter:title" content="java实现改良蚁群算法解决TSP问题">
+<meta name="twitter:description" content="今年的华为软件挑战赛：在图G中指定起点、终点和必须经过的点集，要求找到符合条件的最优Hamilton路。看到该题目的第一反应是TSP问题，在Stack Overflow上搜寻到一个将必经点集进行全排再遍历找到最小路径的方法，尝试后发现效率极低。然后尝试启发式算法来找近似最优解，机缘巧合和时间限制下，只尝试了蚁群算法及其改进后的一些算法。现将思路和代码总结如下。
+
+蚁群算法简介———————————">
 
 
 
@@ -84,7 +90,7 @@
   };
 </script>
 
-  <title> To +1 | Qiangber's Notes </title>
+  <title> java实现改良蚁群算法解决TSP问题 | Qiangber's Notes </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="en">
@@ -204,7 +210,7 @@
             
             
               
-                To +1
+                java实现改良蚁群算法解决TSP问题
               
             
           </h1>
@@ -216,8 +222,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">Posted on</span>
-            <time itemprop="dateCreated" datetime="2016-02-12T20:15:55+08:00" content="2016-02-12">
-              2016-02-12
+            <time itemprop="dateCreated" datetime="2016-04-15T14:46:59+08:00" content="2016-04-15">
+              2016-04-15
             </time>
           </span>
 
@@ -227,8 +233,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/02/12/My-New-Post/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/02/12/My-New-Post/" itemprop="commentsCount"></span>
+                <a href="/2016/04/15/java实现改良蚁群算法解决TSP问题/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/04/15/java实现改良蚁群算法解决TSP问题/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -249,24 +255,39 @@
       
 
       
-        <p>今夜我不关心人类<br>只想你</p>
+        <p>今年的<strong><a href="http://codecraft.huawei.com/home/detail" title="赛题介绍" target="_blank" rel="external">华为软件挑战赛</a></strong>：在图G中指定起点、终点和必须经过的点集，要求找到符合条件的最优Hamilton路。<br>看到该题目的第一反应是TSP问题，在Stack Overflow上搜寻到一个将必经点集进行全排再遍历找到最小路径的方法，尝试后发现效率极低。然后尝试启发式算法来找近似最优解，机缘巧合和时间限制下，只尝试了蚁群算法及其改进后的一些算法。现将思路和代码总结如下。</p>
+<ol>
+<li>蚁群算法简介<br>————————————————<br>蚁群算法（Ant Clony Optimization， ACO）是一种群智能算法，它是由一群无智能或有轻微智能的个体（Agent）通过相互协作而表现出智能行为，从而为求解复杂问题提供了一个新的可能性。蚁群算法最早是由意大利学者Colorni A., Dorigo M. 等于1991年提出。经过20多年的发展，蚁群算法在理论以及应用研究上已经得到巨大的进步。</li>
+</ol>
+<p>蚁群算法是一种仿生学算法，是由自然界中蚂蚁觅食的行为而启发的。在自然界中，蚂蚁觅食过程中，蚁群总能够按照寻找到一条从蚁巢和食物源的最优路径。</p>
+<p>该算法具有较强的鲁棒性和分布式计算能力，同时还易于与其它算法相结合，特别适合于求解困难的组合优化问题，算法成功地用于TSP求解、工件排序、图着色、车辆调度等多目标组合优化问题。</p>
 
       
     </div>
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/tags/算法/" rel="tag">#算法</a>
+          
+        </div>
+      
 
       
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2016/02/22/基于Hexo搭建静态博客——在node-js-4-3-0上的改进/" rel="next" title="基于Hexo3.0搭建静态博客">
+                <i class="fa fa-chevron-left"></i> 基于Hexo3.0搭建静态博客
+              </a>
+            
           </div>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2016/02/22/基于Hexo搭建静态博客——在node-js-4-3-0上的改进/" rel="prev" title="基于Hexo3.0搭建静态博客">
-                基于Hexo3.0搭建静态博客 <i class="fa fa-chevron-right"></i>
+              <a href="/2016/12/12/随笔/" rel="prev" title="随笔">
+                随笔 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -293,8 +314,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2016/02/12/My-New-Post/"
-           data-title="To +1" data-url="http://yoursite.com/2016/02/12/My-New-Post/">
+      <div class="ds-thread" data-thread-key="2016/04/15/java实现改良蚁群算法解决TSP问题/"
+           data-title="java实现改良蚁群算法解决TSP问题" data-url="http://yoursite.com/2016/04/15/java实现改良蚁群算法解决TSP问题/">
       </div>
     
   </div>
